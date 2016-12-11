@@ -10,30 +10,30 @@ import UIKit
 
 public extension UIDevice {
     public func diskInfo() -> String {
-        let bcFormatter = NSByteCountFormatter()
-        bcFormatter.countStyle = .File
+        let bcFormatter = ByteCountFormatter()
+        bcFormatter.countStyle = .file
         let info = "Disk Status:\n" +
-            "Total: \(bcFormatter.stringFromByteCount(numericCast(totalDiskSpace)))\n" +
-            "Free: \(bcFormatter.stringFromByteCount(numericCast(freeDiskSpace)))\n";
+            "Total: \(bcFormatter.string(fromByteCount: numericCast(totalDiskSpace)))\n" +
+            "Free: \(bcFormatter.string(fromByteCount: numericCast(freeDiskSpace)))\n";
         return info
     }
 
     public var totalDiskSpace: UInt64 {
         do {
-            let attributes = try NSFileManager.defaultManager().attributesOfFileSystemForPath(NSHomeDirectory())
-            return (attributes[NSFileSystemSize] as? NSNumber)?.unsignedLongLongValue ?? 0
+            let attributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+            return (attributes[FileAttributeKey.systemSize] as? NSNumber)?.uint64Value ?? 0
         } catch {
-            print(exception)
+            print(error)
             return 0
         }
     }
 
     public var freeDiskSpace: UInt64 {
         do {
-            let attributes = try NSFileManager.defaultManager().attributesOfFileSystemForPath(NSHomeDirectory())
-            return (attributes[NSFileSystemFreeSize] as? NSNumber)?.unsignedLongLongValue ?? 0
+            let attributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+            return (attributes[FileAttributeKey.systemFreeSize] as? NSNumber)?.uint64Value ?? 0
         } catch {
-            print(exception)
+            print(error)
             return 0
         }
     }
