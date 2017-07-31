@@ -9,6 +9,7 @@
 import UIKit
 
 public extension UIDevice {
+  
   public func diskInfo() -> String {
     let bcFormatter = ByteCountFormatter()
     bcFormatter.countStyle = .file
@@ -37,4 +38,5 @@ public extension UIDevice {
       return 0
     }
   }
+  
 }

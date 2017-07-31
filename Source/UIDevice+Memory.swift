@@ -8,7 +8,9 @@
 
 import UIKit
 
+@objc
 public extension UIDevice {
+  
   public func memoryInfo() -> String {
     let bcFormatter = ByteCountFormatter()
     bcFormatter.countStyle = .memory
@@ -27,11 +29,53 @@ public extension UIDevice {
       "Purgeable: \(bcFormatter.string(fromByteCount: numericCast(purgeableMemory)))"
     return info
   }
+ 
+  public var totalMemory: UInt64 {
+    return getSysInfo(name: HW_PHYSMEM)
+  }
+  
+  public var userMemory: UInt64 {
+    return getSysInfo(name: HW_USERMEM)
+  }
+  
+  public var residentMemory: UInt64 {
+    return numericCast(getTaskInfo().resident_size)
+  }
+  
+  public var virtualMemory: UInt64 {
+    return numericCast(getTaskInfo().virtual_size)
+  }
+  
+  public var freeMemory: UInt64 {
+    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
+    return UInt64(vmStatistics.free_count) * UInt64(pageSize)
+  }
+  
+  public var activeMemory: UInt64 {
+    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
+    return UInt64(vmStatistics.active_count) * UInt64(pageSize)
+  }
+  
+  public var inactiveMemory: UInt64 {
+    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
+    return UInt64(vmStatistics.inactive_count) * UInt64(pageSize)
+  }
+  
+  public var wiredMemory: UInt64 {
+    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
+    return UInt64(vmStatistics.wire_count) * UInt64(pageSize)
+  }
+  
+  public var purgeableMemory: UInt64 {
+    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
+    return UInt64(vmStatistics.purgeable_count) * UInt64(pageSize)
+  }
+
 }
 
-// MARK: sysctl
-public extension UIDevice {
-  private func getSysInfo(name: Int32) -> UInt64 {
+private extension UIDevice {
+  
+   func getSysInfo(name: Int32) -> UInt64 {
     var mib = [CTL_HW, name]
     var size = 0
     sysctl(&mib, 2, nil, &size, nil, 0)
@@ -63,19 +107,8 @@ public extension UIDevice {
     resultPointer.deallocate(bytes: size, alignedTo: alignment)
     return result
   }
-
-  public var totalMemory: UInt64 {
-    return getSysInfo(name: HW_PHYSMEM)
-  }
-
-  public var userMemory: UInt64 {
-    return getSysInfo(name: HW_USERMEM)
-  }
-}
-
-// MARK: task_info
-public extension UIDevice {
-  private func getTaskInfo() -> task_basic_info {
+  
+  func getTaskInfo() -> task_basic_info {
     var info = task_basic_info()
     var infoSize = mach_msg_type_number_t(MemoryLayout<task_basic_info>.size / MemoryLayout<natural_t>.size)
     withUnsafeMutablePointer(to: &info) { infoPointer in
@@ -88,19 +121,8 @@ public extension UIDevice {
     }
     return info
   }
-
-  public var residentMemory: UInt64 {
-    return numericCast(getTaskInfo().resident_size)
-  }
-
-  public var virtualMemory: UInt64 {
-    return numericCast(getTaskInfo().virtual_size)
-  }
-}
-
-// MARK: host_page_size & host_statistics
-public extension UIDevice {
-  fileprivate func getPageSizeAndVMStatistics() -> (vm_size_t, vm_statistics) {
+  
+  func getPageSizeAndVMStatistics() -> (vm_size_t, vm_statistics) {
     let hostPort = mach_host_self()
     var pageSize: vm_size_t = 0
     let result = host_page_size(hostPort, &pageSize)
@@ -120,29 +142,5 @@ public extension UIDevice {
     }
     return (pageSize, info)
   }
-
-  public var freeMemory: UInt64 {
-    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
-    return UInt64(vmStatistics.free_count) * UInt64(pageSize)
-  }
-
-  public var activeMemory: UInt64 {
-    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
-    return UInt64(vmStatistics.active_count) * UInt64(pageSize)
-  }
-
-  public var inactiveMemory: UInt64 {
-    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
-    return UInt64(vmStatistics.inactive_count) * UInt64(pageSize)
-  }
-
-  public var wiredMemory: UInt64 {
-    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
-    return UInt64(vmStatistics.wire_count) * UInt64(pageSize)
-  }
-
-  public var purgeableMemory: UInt64 {
-    let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
-    return UInt64(vmStatistics.purgeable_count) * UInt64(pageSize)
-  }
+  
 }
