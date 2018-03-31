@@ -4,6 +4,7 @@
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/DeviceKit.svg)](https://cocoapods.org/pods/DeviceKit)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![codecov](https://codecov.io/gh/dennisweissmann/DeviceKit/branch/master/graph/badge.svg)](https://codecov.io/gh/dennisweissmann/DeviceKit)
+[![Maintainability](https://api.codeclimate.com/v1/badges/844e23a17bde71ff6be1/maintainability)](https://codeclimate.com/github/dennisweissmann/DeviceKit/maintainability)
 [![Platform](https://img.shields.io/cocoapods/p/DeviceKit.svg?style=flat)](http://cocoadocs.org/docsets/DeviceKit)
 
 
@@ -36,6 +37,10 @@ DeviceKit can be installed in various ways.
 
 ### CocoaPods
 
+#### Swift 4
+```ruby
+pod 'DeviceKit', '~> 1.3.0'
+```
 #### Swift 3
 ```ruby
 pod 'DeviceKit', '~> 1.0'
@@ -47,6 +52,10 @@ pod 'DeviceKit', :git => 'https://github.com/dennisweissmann/DeviceKit.git', :br
 
 ### Carthage
 
+#### Swift 4
+```ogdl
+github "dennisweissmann/DeviceKit" ~> 1.3.0
+```
 #### Swift 3
 ```ogdl
 github "dennisweissmann/DeviceKit" ~> 1.0
@@ -145,6 +154,31 @@ if device.batteryLevel >= 50 {
 }
 ```
 
+### Get Low Power mode status
+```swift
+if device.batteryState.lowPowerMode {
+  print("Low Power mode is enabled! 🔋")
+} else {
+  print("Low Power mode is disabled! 😊")
+}
+```
+
+### Check if a Guided Access session is currently active
+```swift
+if device.isGuidedAccessSessionActive {
+  print("Guided Access session is currently active")
+} else {
+  print("No Guided Access session is currently active")
+}
+```
+
+### Get Screen Brightness
+```swift
+if device.screenBrightness < 50 {
+  print("Take care of your eyes!")
+}
+```
+
 ## Source of Information
 All model identifiers are taken from the following website: https://www.theiphonewiki.com/wiki/Models or extracted from the simulator app bundled with Xcode.
 
@@ -153,17 +187,5 @@ If you have the need for a specific feature that you want implemented or if you 
 If you extended the functionality of DeviceKit yourself and want others to use it too, please submit a pull request.
 
 ## Contributors
-The following people (in alphabetical order) contributed to this project - it wouldn't be what it is without you! Thank you very much! 🙏
+The complete list of people who contributed to this project is available [here](https://github.com/dennisweissmann/DeviceKit/graphs/contributors). DeviceKit wouldn't be what it is without you! Thank you very much! 🙏
 
-- [chappieee](https://github.com/chappieee)
-- [Rui Costa](https://github.com/ruipfcosta)
-- [elgordino](https://github.com/elgordino)
-- [Genie Jhang](https://github.com/geniejhang)
-- [Steve Moser](https://github.com/stevemoser)
-- [Juan Carlos Ospina Gonzalez](https://github.com/piterwilson)
-- [phiren](https://github.com/phiren)
-- [Prakash Rajendran](https://github.com/dearprakash)
-- [Trey Richards](https://github.com/treyrich)
-- [Tillman Swinke](https://github.com/tswinke)
-- [Kraig Wastlund](https://github.com/KraigWastlund)
-- [Kaden Wilkinson](https://github.com/kdawgwilk)
