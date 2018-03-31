@@ -89,7 +89,7 @@ private extension UIDevice {
       alignment = MemoryLayout<UInt32>.alignment
     }
 
-    let resultPointer = UnsafeMutableRawPointer.allocate(bytes: size, alignedTo: alignment)
+    let resultPointer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: alignment)
     sysctl(&mib, 2, resultPointer, &size, nil, 0)
 
     let result: UInt64
@@ -104,7 +104,7 @@ private extension UIDevice {
       result = 0
     }
 
-    resultPointer.deallocate(bytes: size, alignedTo: alignment)
+    resultPointer.deallocate()
     return result
   }
   
