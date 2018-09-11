@@ -37,6 +37,11 @@
                BlueprintName = "DeviceKitTests"
                ReferencedContainer = "container:DeviceKit.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "DeviceKitTests/testKeepsBatteryMonitoringState()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>
