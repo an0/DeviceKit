@@ -112,6 +112,18 @@ public enum Device {
     ///
     /// ![Image](https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP770/iphonex.png)
     case iPhoneX
+    /// Device is an [iPhone Xs](https://support.apple.com/kb/SP779)
+    ///
+    /// ![Image](https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP779/SP779-iphone-xs.jpg)
+    case iPhoneXs
+    /// Device is an [iPhone Xs Max](https://support.apple.com/kb/SP780)
+    ///
+    /// ![Image](https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP780/SP780-iPhone-Xs-Max.jpg)
+    case iPhoneXsMax
+    /// Device is an [iPhone Xr](https://support.apple.com/kb/SP781)
+    ///
+    /// ![Image](https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP781/SP781-iPhone-xr.jpg)
+    case iPhoneXr
     /// Device is an [iPad 2](https://support.apple.com/kb/SP622)
     ///
     /// ![Image](https://support.apple.com/library/APPLE/APPLECARE_ALLGEOS/SP622/SP622_01-ipad2-mul.png)
@@ -199,11 +211,11 @@ public enum Device {
 
   /// Initializes a `Device` representing the current device this software runs on.
   public init() {
-    self = Device.mapToDevice(identifier: Device.identifier)
+    self = Device.instance
   }
 
   /// Gets the identifier from the system, such as "iPhone7,1".
-  public static var identifier: String {
+  public static var identifier: String = {
     var systemInfo = utsname()
     uname(&systemInfo)
     let mirror = Mirror(reflecting: systemInfo.machine)
@@ -213,7 +225,9 @@ public enum Device {
       return identifier + String(UnicodeScalar(UInt8(value)))
     }
     return identifier
-  }
+  }()
+
+  private static let instance = Device.mapToDevice(identifier: Device.identifier)
 
   /// Maps an identifier to a Device. If the identifier can not be mapped to an existing device, `UnknownDevice(identifier)` is returned.
   ///
@@ -240,6 +254,9 @@ public enum Device {
       case "iPhone10,1", "iPhone10,4": return iPhone8
       case "iPhone10,2", "iPhone10,5": return iPhone8Plus
       case "iPhone10,3", "iPhone10,6": return iPhoneX
+      case "iPhone11,2": return iPhoneXs
+      case "iPhone11,4", "iPhone11,6": return iPhoneXsMax
+      case "iPhone11,8": return iPhoneXr
       case "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4": return iPad2
       case "iPad3,1", "iPad3,2", "iPad3,3": return iPad3
       case "iPad3,4", "iPad3,5", "iPad3,6": return iPad4
@@ -291,12 +308,17 @@ public enum Device {
 
     /// All iPhones
     public static var allPhones: [Device] {
-      return [.iPhone4, .iPhone4s, .iPhone5, .iPhone5c, .iPhone5s, .iPhone6, .iPhone6Plus, .iPhone6s, .iPhone6sPlus, .iPhone7, .iPhone7Plus, .iPhoneSE, .iPhone8, .iPhone8Plus, .iPhoneX]
+      return [.iPhone4, .iPhone4s, .iPhone5, .iPhone5c, .iPhone5s, .iPhone6, .iPhone6Plus, .iPhone6s, .iPhone6sPlus, .iPhone7, .iPhone7Plus, .iPhoneSE, .iPhone8, .iPhone8Plus, .iPhoneX, .iPhoneXs, .iPhoneXsMax, .iPhoneXr]
     }
 
     /// All iPads
     public static var allPads: [Device] {
       return [.iPad2, .iPad3, .iPad4, .iPadAir, .iPadAir2, .iPad5, .iPad6, .iPadMini, .iPadMini2, .iPadMini3, .iPadMini4, .iPadPro9Inch, .iPadPro12Inch, .iPadPro12Inch2, .iPadPro10Inch]
+    }
+    
+    /// All X-Series Devices
+    public static var allXSeriesDevices: [Device] {
+      return [.iPhoneX, .iPhoneXs, .iPhoneXsMax, .iPhoneXr]
     }
 
     /// All Plus-Sized Devices
@@ -332,6 +354,11 @@ public enum Device {
     /// All simulator iPad mini
     public static var allSimulatorMiniDevices: [Device] {
       return allMiniDevices.map(Device.simulator)
+    }
+
+    /// All simulator Plus-Sized Devices
+    public static var allSimulatorXSeriesDevices: [Device] {
+      return allXSeriesDevices.map(Device.simulator)
     }
 
     /// All simulator Plus-Sized Devices
@@ -373,7 +400,7 @@ public enum Device {
 
     public var isZoomed: Bool {
       // TODO: Longterm we need a better solution for this!
-      guard self != .iPhoneX else { return false }
+      guard self != .iPhoneX && self != .iPhoneXs else { return false }
       if Int(UIScreen.main.scale.rounded()) == 3 {
         // Plus-sized
         return UIScreen.main.nativeScale > 2.7
@@ -402,6 +429,9 @@ public enum Device {
       case .iPhone8: return 4.7
       case .iPhone8Plus: return 5.5
       case .iPhoneX: return 5.8
+      case .iPhoneXs: return 5.8
+      case .iPhoneXsMax: return 6.5
+      case .iPhoneXr: return 6.1
       case .iPad2: return 9.7
       case .iPad3: return 9.7
       case .iPad4: return 9.7
@@ -443,6 +473,9 @@ public enum Device {
       case .iPhone8: return (width: 9, height: 16)
       case .iPhone8Plus: return (width: 9, height: 16)
       case .iPhoneX: return (width: 9, height: 19.5)
+      case .iPhoneXs: return (width: 9, height: 19.5)
+      case .iPhoneXsMax: return (width: 9, height: 19.5)
+      case .iPhoneXr: return (width: 9, height: 19.5)
       case .iPad2: return (width: 3, height: 4)
       case .iPad3: return (width: 3, height: 4)
       case .iPad4: return (width: 3, height: 4)
@@ -465,27 +498,27 @@ public enum Device {
     }
 
     /// All Touch ID Capable Devices
-    static var allTouchIDCapableDevices: [Device] {
+    static public var allTouchIDCapableDevices: [Device] {
       return [.iPhone5s, .iPhone6, .iPhone6Plus, .iPhone6s, .iPhone6sPlus, .iPhone7, .iPhone7Plus, .iPhoneSE, .iPhone8, .iPhone8Plus, .iPadAir2, .iPad5, .iPad6, .iPadMini3, .iPadMini4, .iPadPro9Inch, .iPadPro12Inch, .iPadPro12Inch2, .iPadPro10Inch]
     }
 
     /// All Face ID Capable Devices
-    static var allFaceIDCapableDevices: [Device] {
-      return [.iPhoneX]
+    static public var allFaceIDCapableDevices: [Device] {
+      return [.iPhoneX, .iPhoneXs, .iPhoneXsMax, .iPhoneXr]
     }
 
     /// Returns whether or not the device has Touch ID
-    var isTouchIDCapable: Bool {
+    public var isTouchIDCapable: Bool {
       return isOneOf(Device.allTouchIDCapableDevices)
     }
 
     /// Returns whether or not the device has Face ID
-    var isFaceIDCapable: Bool {
+    public var isFaceIDCapable: Bool {
       return isOneOf(Device.allFaceIDCapableDevices)
     }
 
     /// Returns whether or not the device has any biometric sensor (i.e. Touch ID or Face ID)
-    var hasBiometricSensor: Bool {
+    public var hasBiometricSensor: Bool {
       return isTouchIDCapable || isFaceIDCapable
     }
 
@@ -594,6 +627,9 @@ public enum Device {
       case .iPhone8: return 326
       case .iPhone8Plus: return 401
       case .iPhoneX: return 458
+      case .iPhoneXs: return 458
+      case .iPhoneXsMax: return 458
+      case .iPhoneXr: return 326
       case .iPad2: return 132
       case .iPad3: return 264
       case .iPad4: return 264
@@ -621,9 +657,13 @@ public enum Device {
   /// True when a Guided Access session is currently active; otherwise, false.
   public var isGuidedAccessSessionActive: Bool {
     #if os(iOS)
-    return UIAccessibility.isGuidedAccessEnabled
+      #if swift(>=4.2)
+        return UIAccessibility.isGuidedAccessEnabled
+      #else
+        return UIAccessibilityIsGuidedAccessEnabled()
+      #endif
     #else
-    return false
+      return false
     #endif
   }
 
@@ -661,6 +701,9 @@ extension Device: CustomStringConvertible {
       case .iPhone8: return "iPhone 8"
       case .iPhone8Plus: return "iPhone 8 Plus"
       case .iPhoneX: return "iPhone X"
+      case .iPhoneXs: return "iPhone Xs"
+      case .iPhoneXsMax: return "iPhone Xs Max"
+      case .iPhoneXr: return "iPhone Xr"
       case .iPad2: return "iPad 2"
       case .iPad3: return "iPad 3"
       case .iPad4: return "iPad 4"

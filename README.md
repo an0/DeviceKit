@@ -11,8 +11,8 @@
 | Branch | Build Status | Versions |
 |:---------|:--------------:|:----------:|
 | **master** |[![Build Status](https://travis-ci.org/dennisweissmann/DeviceKit.svg?branch=master)](https://travis-ci.org/dennisweissmann/DeviceKit)| - |
-| **Swift 4** |[![Build Status](https://travis-ci.org/dennisweissmann/DeviceKit.svg?branch=swift-4)](https://travis-ci.org/dennisweissmann/DeviceKit)| ≥ 1.3.0 |
-| **Swift 3** |[![Build Status](https://travis-ci.org/dennisweissmann/DeviceKit.svg?branch=swift-3)](https://travis-ci.org/dennisweissmann/DeviceKit)| ≥ 1.0 ≤ 1.2.3 |
+| **Swift 4 - 4.2** |[![Build Status](https://travis-ci.org/dennisweissmann/DeviceKit.svg?branch=swift-4)](https://travis-ci.org/dennisweissmann/DeviceKit)| ≥ 1.3 |
+| **Swift 3** |[![Build Status](https://travis-ci.org/dennisweissmann/DeviceKit.svg?branch=swift-3)](https://travis-ci.org/dennisweissmann/DeviceKit)| ≥ 1.0 < 1.3 |
 | **Swift 2.3** |[![Build Status](https://travis-ci.org/dennisweissmann/DeviceKit.svg?branch=swift-2.3-unsupported)](https://travis-ci.org/dennisweissmann/DeviceKit)| < 1.0 |
 
 `DeviceKit` is a value-type replacement of [`UIDevice`](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIDevice_Class/).
@@ -45,11 +45,7 @@ DeviceKit can be installed in various ways.
 
 ### CocoaPods
 
-#### Swift 4.2 (Pre-Release)
-```ruby
-pod 'DeviceKit', :git => 'https://github.com/dennisweissmann/DeviceKit.git', :branch => 'master'
-```
-#### Swift 4.0 - Swift 4.1
+#### Swift 4.0 - Swift 4.2
 ```ruby
 pod 'DeviceKit', '~> 1.3'
 ```
@@ -64,11 +60,7 @@ pod 'DeviceKit', :git => 'https://github.com/dennisweissmann/DeviceKit.git', :br
 
 ### Carthage
 
-#### Swift 4.2 (Pre-Release)
-```ogdl
-github "dennisweissmann/DeviceKit" "master"
-```
-#### Swift 4.0 - Swift 4.1
+#### Swift 4.0 - Swift 4.2
 ```ogdl
 github "dennisweissmann/DeviceKit" ~> 1.3
 ```
