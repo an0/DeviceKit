@@ -10,7 +10,7 @@ import UIKit
 
 public extension UIDevice {
   
-  public func diskInfo() -> String {
+  func diskInfo() -> String {
     let bcFormatter = ByteCountFormatter()
     bcFormatter.countStyle = .file
     let info = "Disk Status:\n" +
@@ -19,7 +19,7 @@ public extension UIDevice {
     return info
   }
 
-  public var totalDiskSpace: UInt64 {
+  var totalDiskSpace: UInt64 {
     do {
       let attributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
       return (attributes[FileAttributeKey.systemSize] as? NSNumber)?.uint64Value ?? 0
@@ -29,7 +29,7 @@ public extension UIDevice {
     }
   }
 
-  public var freeDiskSpace: UInt64 {
+  var freeDiskSpace: UInt64 {
     do {
       let attributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
       return (attributes[FileAttributeKey.systemFreeSize] as? NSNumber)?.uint64Value ?? 0

@@ -11,7 +11,7 @@ import UIKit
 @objc
 public extension UIDevice {
   
-  public func memoryInfo() -> String {
+  func memoryInfo() -> String {
     let bcFormatter = ByteCountFormatter()
     bcFormatter.countStyle = .memory
     // FIXME: workaround for "Expression was too complex to be solved in reasonable time; consider breaking up the expression into distinct sub-expressions"
@@ -30,43 +30,43 @@ public extension UIDevice {
     return info
   }
  
-  public var totalMemory: UInt64 {
+  var totalMemory: UInt64 {
     return getSysInfo(name: HW_PHYSMEM)
   }
   
-  public var userMemory: UInt64 {
+  var userMemory: UInt64 {
     return getSysInfo(name: HW_USERMEM)
   }
   
-  public var residentMemory: UInt64 {
+  var residentMemory: UInt64 {
     return numericCast(getTaskInfo().resident_size)
   }
   
-  public var virtualMemory: UInt64 {
+  var virtualMemory: UInt64 {
     return numericCast(getTaskInfo().virtual_size)
   }
   
-  public var freeMemory: UInt64 {
+  var freeMemory: UInt64 {
     let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
     return UInt64(vmStatistics.free_count) * UInt64(pageSize)
   }
   
-  public var activeMemory: UInt64 {
+  var activeMemory: UInt64 {
     let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
     return UInt64(vmStatistics.active_count) * UInt64(pageSize)
   }
   
-  public var inactiveMemory: UInt64 {
+  var inactiveMemory: UInt64 {
     let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
     return UInt64(vmStatistics.inactive_count) * UInt64(pageSize)
   }
   
-  public var wiredMemory: UInt64 {
+  var wiredMemory: UInt64 {
     let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
     return UInt64(vmStatistics.wire_count) * UInt64(pageSize)
   }
   
-  public var purgeableMemory: UInt64 {
+  var purgeableMemory: UInt64 {
     let (pageSize, vmStatistics) = getPageSizeAndVMStatistics()
     return UInt64(vmStatistics.purgeable_count) * UInt64(pageSize)
   }
