@@ -14,7 +14,7 @@ import XCTest
 
 class DeviceKitTests: XCTestCase {
 
-  let device = Device()
+  let device = Device.current
 
   func testDeviceSimulator() {
     XCTAssertTrue(device.isOneOf(Device.allSimulators))
@@ -32,6 +32,27 @@ class DeviceKitTests: XCTestCase {
   #if os(iOS)
   func testIsSimulator() {
     XCTAssertTrue(device.isSimulator)
+  }
+
+  func testIsPhoneIsPad() {
+    // Test for https://github.com/devicekit/DeviceKit/issues/165 to prevent it from happening in the future.
+
+    if UIDevice.current.userInterfaceIdiom == .pad {
+      XCTAssertTrue(device.isPad)
+      XCTAssertFalse(device.isPhone)
+    } else if UIDevice.current.userInterfaceIdiom == .phone {
+      XCTAssertFalse(device.isPad)
+      XCTAssertTrue(device.isPhone)
+    }
+
+    for pad in Device.allPads {
+      XCTAssertTrue(pad.isPad)
+      XCTAssertFalse(pad.isPhone)
+    }
+    for phone in Device.allPhones {
+      XCTAssertFalse(phone.isPad)
+      XCTAssertTrue(phone.isPhone)
+    }
   }
 
   func testBattery() {
@@ -68,10 +89,10 @@ class DeviceKitTests: XCTestCase {
     XCTAssertEqual(Device.mapToDevice(identifier: "iPhone10,5"), .iPhone8Plus)
     XCTAssertEqual(Device.mapToDevice(identifier: "iPhone10,3"), .iPhoneX)
     XCTAssertEqual(Device.mapToDevice(identifier: "iPhone10,6"), .iPhoneX)
-    XCTAssertEqual(Device.mapToDevice(identifier: "iPhone11,2"), .iPhoneXs)
-    XCTAssertEqual(Device.mapToDevice(identifier: "iPhone11,4"), .iPhoneXsMax)
-    XCTAssertEqual(Device.mapToDevice(identifier: "iPhone11,6"), .iPhoneXsMax)
-    XCTAssertEqual(Device.mapToDevice(identifier: "iPhone11,8"), .iPhoneXr)
+    XCTAssertEqual(Device.mapToDevice(identifier: "iPhone11,2"), .iPhoneXS)
+    XCTAssertEqual(Device.mapToDevice(identifier: "iPhone11,4"), .iPhoneXSMax)
+    XCTAssertEqual(Device.mapToDevice(identifier: "iPhone11,6"), .iPhoneXSMax)
+    XCTAssertEqual(Device.mapToDevice(identifier: "iPhone11,8"), .iPhoneXR)
     XCTAssertEqual(Device.mapToDevice(identifier: "iPad2,1"), .iPad2)
     XCTAssertEqual(Device.mapToDevice(identifier: "iPad2,2"), .iPad2)
     XCTAssertEqual(Device.mapToDevice(identifier: "iPad2,3"), .iPad2)
@@ -136,9 +157,9 @@ class DeviceKitTests: XCTestCase {
     XCTAssertTrue(Device.iPhone8.screenRatio == (width: 9, height: 16))
     XCTAssertTrue(Device.iPhone8Plus.screenRatio == (width: 9, height: 16))
     XCTAssertTrue(Device.iPhoneX.screenRatio == (width: 9, height: 19.5))
-    XCTAssertTrue(Device.iPhoneXs.screenRatio == (width: 9, height: 19.5))
-    XCTAssertTrue(Device.iPhoneXsMax.screenRatio == (width: 9, height: 19.5))
-    XCTAssertTrue(Device.iPhoneXr.screenRatio == (width: 9, height: 19.5))
+    XCTAssertTrue(Device.iPhoneXS.screenRatio == (width: 9, height: 19.5))
+    XCTAssertTrue(Device.iPhoneXSMax.screenRatio == (width: 9, height: 19.5))
+    XCTAssertTrue(Device.iPhoneXR.screenRatio == (width: 9, height: 19.5))
     XCTAssertTrue(Device.iPad2.screenRatio == (width: 3, height: 4))
     XCTAssertTrue(Device.iPad3.screenRatio == (width: 3, height: 4))
     XCTAssertTrue(Device.iPad4.screenRatio == (width: 3, height: 4))
@@ -181,9 +202,9 @@ class DeviceKitTests: XCTestCase {
     XCTAssertEqual(Device.iPhone7Plus.diagonal, 5.5)
     XCTAssertEqual(Device.iPhone8Plus.diagonal, 5.5)
     XCTAssertEqual(Device.iPhoneX.diagonal, 5.8)
-    XCTAssertEqual(Device.iPhoneXs.diagonal, 5.8)
-    XCTAssertEqual(Device.iPhoneXsMax.diagonal, 6.5)
-    XCTAssertEqual(Device.iPhoneXr.diagonal, 6.1)
+    XCTAssertEqual(Device.iPhoneXS.diagonal, 5.8)
+    XCTAssertEqual(Device.iPhoneXSMax.diagonal, 6.5)
+    XCTAssertEqual(Device.iPhoneXR.diagonal, 6.1)
 
     XCTAssertEqual(Device.iPad2.diagonal, 9.7)
     XCTAssertEqual(Device.iPad3.diagonal, 9.7)
@@ -208,9 +229,10 @@ class DeviceKitTests: XCTestCase {
     XCTAssertEqual(Device.unknown(UUID().uuidString).diagonal, -1)
   }
 
-  func testDescription() {
-    XCTAssertEqual(Device.iPodTouch5.description, "iPod Touch 5")
-    XCTAssertEqual(Device.iPodTouch6.description, "iPod Touch 6")
+  func testDescription() { // swiftlint:disable:this function_body_length
+    XCTAssertEqual(Device.iPodTouch5.description, "iPod touch (5th generation)")
+    XCTAssertEqual(Device.iPodTouch6.description, "iPod touch (6th generation)")
+    XCTAssertEqual(Device.iPodTouch7.description, "iPod touch (7th generation)")
     XCTAssertEqual(Device.iPhone4.description, "iPhone 4")
     XCTAssertEqual(Device.iPhone4s.description, "iPhone 4s")
     XCTAssertEqual(Device.iPhone5.description, "iPhone 5")
@@ -226,19 +248,22 @@ class DeviceKitTests: XCTestCase {
     XCTAssertEqual(Device.iPhone8.description, "iPhone 8")
     XCTAssertEqual(Device.iPhone8Plus.description, "iPhone 8 Plus")
     XCTAssertEqual(Device.iPhoneX.description, "iPhone X")
-    XCTAssertEqual(Device.iPhoneXs.description, "iPhone Xs")
-    XCTAssertEqual(Device.iPhoneXsMax.description, "iPhone Xs Max")
-    XCTAssertEqual(Device.iPhoneXr.description, "iPhone Xr")
+    XCTAssertEqual(Device.iPhoneXS.description, "iPhone Xs")
+    XCTAssertEqual(Device.iPhoneXSMax.description, "iPhone Xs Max")
+    XCTAssertEqual(Device.iPhoneXR.description, "iPhone Xʀ")
     XCTAssertEqual(Device.iPad2.description, "iPad 2")
-    XCTAssertEqual(Device.iPad3.description, "iPad 3")
-    XCTAssertEqual(Device.iPad4.description, "iPad 4")
+    XCTAssertEqual(Device.iPad3.description, "iPad (3rd generation)")
+    XCTAssertEqual(Device.iPad4.description, "iPad (4th generation)")
     XCTAssertEqual(Device.iPadAir.description, "iPad Air")
     XCTAssertEqual(Device.iPadAir2.description, "iPad Air 2")
-    XCTAssertEqual(Device.iPad5.description, "iPad 5")
+    XCTAssertEqual(Device.iPad5.description, "iPad (5th generation)")
+    XCTAssertEqual(Device.iPad6.description, "iPad (6th generation)")
+    XCTAssertEqual(Device.iPadAir3.description, "iPad Air (3rd generation)")
     XCTAssertEqual(Device.iPadMini.description, "iPad Mini")
     XCTAssertEqual(Device.iPadMini2.description, "iPad Mini 2")
     XCTAssertEqual(Device.iPadMini3.description, "iPad Mini 3")
     XCTAssertEqual(Device.iPadMini4.description, "iPad Mini 4")
+    XCTAssertEqual(Device.iPadMini5.description, "iPad Mini (5th generation)")
     XCTAssertEqual(Device.iPadPro9Inch.description, "iPad Pro (9.7-inch)")
     XCTAssertEqual(Device.iPadPro12Inch.description, "iPad Pro (12.9-inch)")
     XCTAssertEqual(Device.iPadPro12Inch2.description, "iPad Pro (12.9-inch) (2nd generation)")
@@ -276,9 +301,9 @@ class DeviceKitTests: XCTestCase {
     assertEqualDeviceAndSimulator(device: Device.iPhone8,         property: \Device.ppi, value: 326)
     assertEqualDeviceAndSimulator(device: Device.iPhone8Plus,     property: \Device.ppi, value: 401)
     assertEqualDeviceAndSimulator(device: Device.iPhoneX,         property: \Device.ppi, value: 458)
-    assertEqualDeviceAndSimulator(device: Device.iPhoneXr,        property: \Device.ppi, value: 326)
-    assertEqualDeviceAndSimulator(device: Device.iPhoneXs,        property: \Device.ppi, value: 458)
-    assertEqualDeviceAndSimulator(device: Device.iPhoneXsMax,     property: \Device.ppi, value: 458)
+    assertEqualDeviceAndSimulator(device: Device.iPhoneXR,        property: \Device.ppi, value: 326)
+    assertEqualDeviceAndSimulator(device: Device.iPhoneXS,        property: \Device.ppi, value: 458)
+    assertEqualDeviceAndSimulator(device: Device.iPhoneXSMax,     property: \Device.ppi, value: 458)
 
     assertEqualDeviceAndSimulator(device: Device.iPad2,           property: \Device.ppi, value: 132)
     assertEqualDeviceAndSimulator(device: Device.iPad3,           property: \Device.ppi, value: 264)
@@ -311,26 +336,26 @@ class DeviceKitTests: XCTestCase {
   }
 
   func testIsPlusSized() {
-    XCTAssertEqual(Device.allPlusSizedDevices, [.iPhone6Plus, .iPhone6sPlus, .iPhone7Plus, .iPhone8Plus])
+    XCTAssertEqual(Device.allPlusSizedDevices, [.iPhone6Plus, .iPhone6sPlus, .iPhone7Plus, .iPhone8Plus, .iPhoneXSMax, .iPhone11ProMax])
   }
 
   func testIsPro() {
-    XCTAssertEqual(Device.allProDevices, [.iPadPro9Inch, .iPadPro12Inch, .iPadPro12Inch2, .iPadPro10Inch, .iPadPro11Inch, .iPadPro12Inch3])
+    XCTAssertEqual(Device.allProDevices, [.iPhone11Pro, .iPhone11ProMax, .iPadPro9Inch, .iPadPro12Inch, .iPadPro12Inch2, .iPadPro10Inch, .iPadPro11Inch, .iPadPro12Inch3])
   }
 
   func testGuidedAccessSession() {
-    XCTAssertFalse(Device().isGuidedAccessSessionActive)
+    XCTAssertFalse(Device.current.isGuidedAccessSessionActive)
   }
 
   // enable once unit tests can be run on device
   func testKeepsBatteryMonitoringState() {
     UIDevice.current.isBatteryMonitoringEnabled = true
     XCTAssertTrue(UIDevice.current.isBatteryMonitoringEnabled)
-    _ = Device().batteryState
+    _ = Device.current.batteryState
     XCTAssertTrue(UIDevice.current.isBatteryMonitoringEnabled)
 
     UIDevice.current.isBatteryMonitoringEnabled = false
-    _ = Device().batteryState
+    _ = Device.current.batteryState
     XCTAssertFalse(UIDevice.current.isBatteryMonitoringEnabled)
   }
 
@@ -360,16 +385,43 @@ class DeviceKitTests: XCTestCase {
     XCTAssertNotNil(Device.volumes)
   }
 
+  func testCameras() {
+    for device in Device.allDevicesWithCamera {
+      XCTAssertTrue(device.cameras.contains(.normal) || device.cameras.contains(.telephoto))
+      XCTAssertTrue(device.hasCamera)
+      XCTAssertTrue(device.hasNormalCamera || device.hasTelephotoCamera)
+    }
+    for device in Device.allPhones + Device.allPads + Device.allPods {
+      if !Device.allDevicesWithCamera.contains(device) {
+        XCTAssertFalse(device.cameras.contains(.normal))
+        XCTAssertFalse(device.cameras.contains(.telephoto))
+        XCTAssertFalse(device.hasCamera)
+        XCTAssertFalse(device.hasNormalCamera)
+        XCTAssertFalse(device.hasTelephotoCamera)
+      }
+    }
+    for device in Device.allDevicesWithNormalCamera {
+      XCTAssertTrue(device.cameras.contains(.normal))
+      XCTAssertTrue(device.hasCamera)
+      XCTAssertTrue(device.hasNormalCamera)
+    }
+    for device in Device.allDevicesWithTelephotoCamera {
+      XCTAssertTrue(device.cameras.contains(.telephoto))
+      XCTAssertTrue(device.hasCamera)
+      XCTAssertTrue(device.hasTelephotoCamera)
+    }
+  }
+
   #endif
 
   // MARK: - tvOS
   #if os(tvOS)
   func testIsSimulator() {
-    XCTAssertTrue(Device().isOneOf(Device.allSimulatorTVs))
+    XCTAssertTrue(Device.current.isOneOf(Device.allSimulatorTVs))
   }
 
   func testDescriptionFromIdentifier() {
-    XCTAssertEqual(Device.mapToDevice(identifier: "AppleTV5,3").description, "Apple TV 4")
+    XCTAssertEqual(Device.mapToDevice(identifier: "AppleTV5,3").description, "Apple TV HD")
     XCTAssertEqual(Device.mapToDevice(identifier: "AppleTV6,2").description, "Apple TV 4K")
   }
 
