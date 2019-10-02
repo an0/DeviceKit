@@ -8,6 +8,7 @@
 
 import UIKit
 
+@objc
 public extension UIDevice {
   
   func diskInfo() -> String {
